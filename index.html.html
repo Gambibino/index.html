@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu de Devinette</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Oswald', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; margin: 0; }
+        .game-container { text-align: center; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); }
+        .wave-group { position: relative; margin: 20px auto; width: 200px; }
+        .wave-group .input { font-size: 16px; padding: 10px 5px; display: block; width: 100%; border: none; border-bottom: 1px solid #515151; background: transparent; text-align: center; }
+        .wave-group .input:focus { outline: none; }
+        .wave-group .label { color: #999; font-size: 18px; position: absolute; left: 5px; top: 10px; display: flex; pointer-events: none; }
+        .wave-group .label-char { transition: 0.2s ease all; transition-delay: calc(var(--index) * .05s); }
+        .wave-group .input:focus ~ .label .label-char, .wave-group .input:valid ~ .label .label-char { transform: translateY(-20px); font-size: 14px; color: #06c0f8; }
+        .wave-group .bar { display: block; width: 100%; position: relative; }
+        .wave-group .bar:before, .wave-group .bar:after { content: ''; height: 2px; width: 0; bottom: 1px; position: absolute; background: #03b8ff; transition: 0.2s ease all; }
+        .wave-group .bar:before { left: 50%; } .wave-group .bar:after { right: 50%; }
+        .wave-group .input:focus ~ .bar:before, .wave-group .input:focus ~ .bar:after { width: 50%; }
+        .result-message { margin-top: 15px; font-size: 1.2em; font-weight: bold; }
+        .correct { color: green; } .incorrect { color: red; }
+        .hint { margin-top: 10px; font-size: 1.2em; font-style: italic; color: #555; font-weight: bold; }
+        button { padding: 10px 20px; font-size: 1em; border: none; background-color: #45f3ff; color: #fff; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; font-family: 'Oswald', sans-serif; }
+        button:hover { background-color: #3a90b8; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>DEVINE LE MOT SECRET !</h1>
+        <h1>par Lecat Maxence</h1>
+        <div class="wave-group">
+            <input required="" type="text" class="input" id="userInput">
+            <span class="bar"></span>
+            <label class="label">
+                <span class="label-char" style="--index: 0">M</span>
+                <span class="label-char" style="--index: 1">o</span>
+                <span class="label-char" style="--index: 2">t</span>
+            </label>
+        </div>
+        <button id="submitBtn">Vérifier</button>
+        <p class="result-message" id="resultMessage"></p>
+        <p class="hint" id="hint">Indice : ????</p>
+    </div>
+
+    <script>
+        const wordList = ["chat", "chien", "pomme", "orange", "table", "chaise", "lampe", "porte", "fenetre", "soleil", "lune", "rivière", "pluie", "neige", "voiture", "train", "avion", "maison", "école", "livre", "papier", "crayon", "souris", "écran", "clavier", "ordinateur", "musique", "film", "photo", "fleur", "arbre", "jardin", "chocolat", "gâteau", "pizza", "pain", "fromage", "eau", "café","tournesol","parapluie","cinéma","agriculture","astronaute","plombier","football","magicien","vacances","miroir","parachute","dinosaure","histoire","escalader","ramper","attaquer","militaire","camping","documentaire","policier","classeur","tramway","mensonge","dauphin","cheval","jaguar","oiseau","marteau","poivron","baobab","aspirateur"];
+        let secretWord = wordList[Math.floor(Math.random() * wordList.length)], mistakeCount = 0;
+        const inputField = document.getElementById('userInput'), resultMessage = document.getElementById('resultMessage'), hintMessage = document.getElementById('hint'), submitBtn = document.getElementById('submitBtn');
+
+        function generateHint() {
+            let hint = "";
+            for (let i = 0; i < secretWord.length; i++) { hint += (i <= mistakeCount) ? secretWord[i] : "?"; }
+            return hint;
+        }
+
+        submitBtn.addEventListener('click', function() {
+            const userInput = inputField.value.toLowerCase().trim();
+            if (userInput === secretWord) {
+                resultMessage.textContent = "Bravo ! Vous avez deviné le mot."; resultMessage.className = "result-message correct";
+                setTimeout(() => { secretWord = wordList[Math.floor(Math.random() * wordList.length)]; mistakeCount = 0; resultMessage.textContent = ""; hintMessage.textContent = `Indice : ????`; inputField.value = ""; }, 2000);
+            } else {
+                resultMessage.textContent = "Mauvaise réponse, essaye encore."; resultMessage.className = "result-message incorrect";
+                if (mistakeCount < secretWord.length - 1) mistakeCount++;
+                hintMessage.textContent = `Indice : ${generateHint()}`;
+            }
+        });
+    </script>
+
+</body>
+</html>
